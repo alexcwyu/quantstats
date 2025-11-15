@@ -1,0 +1,77 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "quantstats"
+version = "0.0.77"
+description = "Portfolio analytics for quants"
+readme = "README.rst"
+requires-python = "==3.13.*"
+license = {text = "Apache-2.0"}
+authors = [
+    {name = "Ran Aroussi", email = "ran@aroussi.com"},
+]
+keywords = ["quant", "algotrading", "algorithmic-trading", "quantitative-trading", "quantitative-analysis", "algo-trading", "visualization", "plotting"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "Topic :: Office/Business :: Financial",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Mathematics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "pandas>=2.3.3",
+    "numpy>=2.3.4",
+    "seaborn>=0.13.2",
+    "matplotlib>=3.10.7",
+    "scipy>=1.16.3",
+    "tabulate>=0.9.0",
+    "yfinance>=0.2.66",
+    "python-dateutil>=2.9.0",
+    "packaging>=25.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/ranaroussi/quantstats"
+Repository = "https://github.com/ranaroussi/quantstats"
+"Bug Tracker" = "https://github.com/ranaroussi/quantstats/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["quantstats"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "quantstats/**",
+    "README.rst",
+    "LICENSE.txt",
+    "CHANGELOG.md",
+    "requirements.txt",
+]
+exclude = [
+    "tests/**",
+    "docs/**",
+    "examples/**",
+]
+
+[tool.hatch.build]
+include = [
+    "quantstats/report.html",
+    "quantstats/_plotting/*",
+]
+
