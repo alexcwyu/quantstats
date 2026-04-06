@@ -1,6 +1,52 @@
 Changelog
 ===========
 
+0.0.81
+------
+
+**Bugfixes for 0.0.78 release**
+
+- Fixed circular import errors that broke `import quantstats` (#499, #501)
+- Fixed `NameError: name 'dd_get_stats' is not defined` in `reports.full()` (#502)
+- Fixed `reports.html()` to work without specifying output file (opens in browser)
+- Fixed `profit_ratio()` to handle DataFrame inputs properly
+- Removed dark mode CSS from HTML report template
+- Suppressed pandas FutureWarning for callable resampler.apply()
+
+- Improved HTML report header:
+  - Title shows "(Compounded)" only when compounded=True
+  - Date range shows "(matched dates)" only when match_dates=True with benchmark
+  - Parameters now always show Benchmark, Periods/Year, and RF rate
+
+- Added new metrics to full HTML report:
+  - Ulcer Performance Index, Risk-Adjusted Return, Risk-Return Ratio
+  - Avg. Return, Avg. Win, Avg. Loss, Win/Loss Ratio, Profit Ratio
+
+- Added terminal output parameters table for `reports.full()` and `reports.basic()`
+
+- Added comprehensive test suite (125 tests):
+  - Tests for stats, reports, utils, plots, compat, extend_pandas, and Monte Carlo
+
+0.0.78
+------
+
+**2026 Modernization Update**
+
+- Added comprehensive type hints to stats.py functions:
+  - All major public functions now have full type annotations
+  - Uses Python 3.10+ union syntax (`X | Y` instead of `Union[X, Y]`)
+  - Added `Returns` type alias for `pd.Series | pd.DataFrame`
+  - Functions typed include: `ghpr()`, `outliers()`, `remove_outliers()`, `best()`, `worst()`,
+    `consecutive_wins()`, `consecutive_losses()`, `exposure()`, `win_rate()`, `avg_return()`,
+    `avg_win()`, `avg_loss()`, `rolling_volatility()`, `implied_volatility()`, `autocorr_penalty()`,
+    `smart_sharpe()`, `rolling_sharpe()`, `smart_sortino()`, `rolling_sortino()`, `adjusted_sortino()`,
+    `probabilistic_ratio()`, `probabilistic_sharpe_ratio()`, and more
+
+- Simplified compatibility layers for Python 3.10+/pandas 2.0+/numpy 1.24+:
+  - _compat.py: Removed obsolete pandas < 1.0.0 and < 1.4.0 version checks
+  - _numpy_compat.py: Removed obsolete numpy < 1.17.0, < 1.21.0, and < 1.22.0 version checks
+  - Cleaner, more maintainable codebase for modern dependency versions
+
 0.0.77
 ------
 
