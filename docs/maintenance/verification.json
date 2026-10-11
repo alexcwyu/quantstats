@@ -1,0 +1,230 @@
+{
+  "repository": "quantstats",
+  "source_commit_before_documentation_commit": "b2e726ff706cf3e7d9ca2a8f131706043ad2cd77",
+  "recorded_on": "2026-10-12",
+  "records": [
+    {
+      "command": "uv build --python 3.14",
+      "exit_code": 0,
+      "seconds": 0.92,
+      "check": "build",
+      "original_log": "quantstats-build.log",
+      "log_sha256": "2adabf6c722f45236c835c17f8c51e1bcc70f9e5159dc3da52a1eb335b35413a",
+      "outcomes": [
+        "Successfully built dist/quantstats-0.0.86.tar.gz",
+        "Successfully built dist/quantstats-0.0.86-py3-none-any.whl"
+      ]
+    },
+    {
+      "command": "uv build --python 3.14",
+      "exit_code": 0,
+      "seconds": 0.78,
+      "check": "build-final",
+      "original_log": "quantstats-build-final.log",
+      "log_sha256": "2adabf6c722f45236c835c17f8c51e1bcc70f9e5159dc3da52a1eb335b35413a",
+      "outcomes": [
+        "Successfully built dist/quantstats-0.0.86.tar.gz",
+        "Successfully built dist/quantstats-0.0.86-py3-none-any.whl"
+      ]
+    },
+    {
+      "command": "uv build --python 3.15",
+      "exit_code": 0,
+      "seconds": 1.23,
+      "check": "build-selected-python",
+      "original_log": "quantstats-build-selected-python.log",
+      "log_sha256": "a327d46fb0e04d2cbe7e51bac9c5ba8fea77655a35d0933f6160f6c753a429f1",
+      "outcomes": [
+        "Successfully built dist/quantstats-0.0.86.tar.gz",
+        "Successfully built dist/quantstats-0.0.86-py3-none-any.whl"
+      ]
+    },
+    {
+      "command": "/Users/alex/.local/share/uv/python/cpython-3.14-macos-aarch64-none/bin/python3.14 -m compileall -q src",
+      "exit_code": 0,
+      "seconds": 0.08,
+      "check": "compile",
+      "original_log": "quantstats-compile.log",
+      "log_sha256": "cdad8d31f71f9ca30ecb973875a31a35e82562441812821f059e0f67f0cb87cf",
+      "outcomes": []
+    },
+    {
+      "command": "uv run --no-sync python -m compileall -q src",
+      "exit_code": 0,
+      "seconds": 0.13,
+      "check": "compile-final",
+      "original_log": "quantstats-compile-final.log",
+      "log_sha256": "18836bd061fd2cbbcee4cfbe11a0c5bb8956a47a78decc98b17bdc695bd896a7",
+      "outcomes": []
+    },
+    {
+      "command": "uv run --no-sync python -m compileall -q src",
+      "exit_code": 0,
+      "seconds": 0.08,
+      "check": "compile-selected-python",
+      "original_log": "quantstats-compile-selected-python.log",
+      "log_sha256": "18836bd061fd2cbbcee4cfbe11a0c5bb8956a47a78decc98b17bdc695bd896a7",
+      "outcomes": []
+    },
+    {
+      "command": "uv lock --upgrade --python 3.14",
+      "exit_code": 0,
+      "seconds": 0.29,
+      "check": "lock-3.14",
+      "original_log": "quantstats-lock-3.14.log",
+      "log_sha256": "9e3f7c297c738b16596deda721c4e48b5cc252a5d9b415c5e7800961fb3bef88",
+      "outcomes": []
+    },
+    {
+      "command": "uv lock --upgrade --python 3.15",
+      "exit_code": 0,
+      "seconds": 0.34,
+      "check": "lock-3.15",
+      "original_log": "quantstats-lock-3.15.log",
+      "log_sha256": "a675ff2113e7f7ac94f5e1b5e76e44a07ed6db795fb6e484a2269f01ff5632dc",
+      "outcomes": []
+    },
+    {
+      "command": "uv lock --upgrade --python 3.15",
+      "exit_code": 0,
+      "seconds": 0.46,
+      "check": "lock-python315-source-supported",
+      "original_log": "quantstats-lock-python315-source-supported.log",
+      "log_sha256": "83ae9baa4c5ddcf27706f9d78f0823df03ae962744ff723ea68834dc95d629d0",
+      "outcomes": []
+    },
+    {
+      "command": "uv sync --directory /tmp/trading-python315-probes/quantstats --all-extras --all-groups --python 3.15",
+      "exit_code": 0,
+      "seconds": 67.54,
+      "check": "python315-source-probe",
+      "original_log": "quantstats-python315-source-probe.log",
+      "log_sha256": "576a4e2369c45772bf90804736c30a8fe677692d720ff46e7147516cdfe740ea",
+      "outcomes": []
+    },
+    {
+      "command": "uv sync --all-extras --all-groups --python 3.14",
+      "exit_code": 0,
+      "seconds": 0.51,
+      "check": "sync-3.14",
+      "original_log": "quantstats-sync-3.14.log",
+      "log_sha256": "6255c322faca9e6f53841ab6bcfd32988080fb2edb4de12405642a9f0e662361",
+      "outcomes": []
+    },
+    {
+      "command": "uv sync --all-extras --all-groups --python 3.15",
+      "exit_code": 0,
+      "seconds": 1.87,
+      "check": "sync-python315-source-supported",
+      "original_log": "quantstats-sync-python315-source-supported.log",
+      "log_sha256": "fe026b5319a8ae28ec4d38408340afb3cd28311db86280f8bb8bbcc3dc6d93b4",
+      "outcomes": []
+    },
+    {
+      "command": "uv run --no-sync python -m pytest",
+      "exit_code": 1,
+      "seconds": 25.68,
+      "check": "tests",
+      "original_log": "quantstats-tests.log",
+      "log_sha256": "a1318fe8af64fb6726493fb82fedd1fc1ad0cd3502c65f994b3d8c2bcbabccfb",
+      "outcomes": [
+        "10 failed, 215 passed in 24.26s"
+      ]
+    },
+    {
+      "command": "uv run --no-sync python -m pytest",
+      "exit_code": 0,
+      "seconds": 56.05,
+      "check": "tests-matplotlib-orientation",
+      "original_log": "quantstats-tests-matplotlib-orientation.log",
+      "log_sha256": "dcdd04f01dcd89b01c0aff285e0fbd9f890a397b9e50ec31f2a1fbf9ebeedacb",
+      "outcomes": [
+        "225 passed in 54.18s"
+      ]
+    },
+    {
+      "command": "uv run --no-sync python -m pytest",
+      "exit_code": 0,
+      "seconds": 69.76,
+      "check": "tests-python315-source-supported",
+      "original_log": "quantstats-tests-python315-source-supported.log",
+      "log_sha256": "7b515694f44ed82ac6d6c3609fa523187a4b9333a5cdeb73a96c308980b36b47",
+      "outcomes": [
+        "225 passed in 66.75s (0:01:06)"
+      ]
+    },
+    {
+      "command": "uv run --no-sync python -c import sys,importlib.metadata,json; print(sys.version); print(json.dumps({d.metadata[\"Name\"]:d.version for d in importlib.metadata.distributions()},indent=2,sort_keys=True))",
+      "exit_code": 0,
+      "seconds": 0.14,
+      "check": "versions-final",
+      "original_log": "quantstats-versions-final.log",
+      "log_sha256": "f3ecc5a8773694995e32ffc7c1d3957b3f46d134fe89d607d835d8d2c32a0e74",
+      "outcomes": []
+    },
+    {
+      "command": "uv sync --all-extras --all-groups --python 3.14 --no-build --no-install-project",
+      "exit_code": 0,
+      "seconds": 0.55,
+      "check": "wheel-probe-3.14",
+      "original_log": "quantstats-wheel-probe-3.14.log",
+      "log_sha256": "d4e63356e78655d1fe3128d9670bf3abbe61ecb5854de6030dfc0c7eec20af2c",
+      "outcomes": []
+    },
+    {
+      "command": "uv sync --all-extras --all-groups --python 3.15 --no-build --no-install-project",
+      "exit_code": 2,
+      "seconds": 0.83,
+      "check": "wheel-probe-3.15",
+      "original_log": "quantstats-wheel-probe-3.15.log",
+      "log_sha256": "e127747817c5a79a179bfc532d0fcf5025bb054b65539d4abf76e47d451dec85",
+      "outcomes": []
+    }
+  ],
+  "summary": {
+    "repo": "quantstats",
+    "branch": "feature/ayu_develop",
+    "blockers": [],
+    "started": "2026-10-12T00:28:22+0800",
+    "dependency_updates": [],
+    "lock": "passed",
+    "python": "3.15",
+    "sync": "passed",
+    "build": "passed",
+    "compile": "passed",
+    "tests": "passed",
+    "test_summary": "$ uv run --no-sync python -m pytest\n........................................................................ [ 32%]\n........................................................................ [ 64%]\n........................................................................ [ 96%]\n.........                                                                [100%]\n225 passed in 66.75s (0:01:06)\n",
+    "finished": "2026-10-12T00:28:51+0800",
+    "head": "b2e726ff706cf3e7d9ca2a8f131706043ad2cd77",
+    "notes": [
+      "The complete supplied suite passes225 cases. The distribution plot uses Matplotlib orientation and explicit box colors rather than Seaborn's deprecated vert argument.",
+      "Matplotlib>=3.10.9,<3.11 avoids Seaborn0.13.2 use of deprecated colormap.set_bad; NumPy>=2.4.6,<2.5 avoids the current Matplotlib date converter's deprecated generic Timedelta unit. These caps are based on actual full-suite failures."
+    ],
+    "python_version": "3.15.0 (main, Oct  9 2026, 15:11:47) [Clang 22.1.3 ]",
+    "failed_attempts": [
+      {
+        "python": "3.15",
+        "stage": "native wheel probe",
+        "details": "$ uv sync --all-extras --all-groups --python 3.15 --no-build --no-install-project\nUsing CPython 3.15.0\nRemoved virtual environment at: .venv\nCreating virtual environment at: .venv\nResolved 41 packages in 8ms\nerror: Distribution `matplotlib==3.10.9 @ registry+https://pypi.org/simple` can't be installed because it is marked as `--no-build` but has no binary distribution\n"
+      },
+      {
+        "stage": "tests",
+        "details": "______\n\nself = <tests.test_reports.TestEdgeCases object at 0x1127b0050>\nsample_returns = 2020-01-01    0.009934\n2020-01-02   -0.002765\n2020-01-03    0.012954\n2020-01-04    0.030461\n2020-01-05   -0.004683\n   ...21-05-12   -0.003807\n2021-05-13   -0.017512\n2021-05-14   -0.027656\nFreq: D, Name: Strategy, Length: 500, dtype: float64\nsample_benchmark = 2020-01-01   -0.016284\n2020-01-02    0.014960\n2020-01-03    0.004245\n2020-01-04   -0.022594\n2020-01-05   -0.008679\n   ...1-05-12   -0.000404\n2021-05-13    0.004674\n2021-05-14   -0.002131\nFreq: D, Name: Benchmark, Length: 500, dtype: float64\n\n    def test_html_with_dataframe(self, sample_returns, sample_benchmark):\n        \"\"\"Test HTML generation with DataFrame input.\"\"\"\n        df = pd.DataFrame({\"Strategy\": sample_returns})\n        with tempfile.NamedTemporaryFile(mode=\"w\", suffix=\".html\", delete=False) as f:\n            output_path = f.name\n    \n        try:\n>           reports.html(df, sample_benchmark, output=output_path)\n\ntests/test_reports.py:243: \n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \nsrc/quantstats/reports.py:790: in html\n    _get_plots().distribution(\nsrc/quantstats/_plotting/wrappers.py:1036: in distribution\n    fig = _core.plot_distribution(\nsrc/quantstats/_plotting/core.py:1548: in plot_distribution\n    _sns.boxplot(\n.venv/lib/python3.14/site-packages/seaborn/categorical.py:1634: in boxplot\n    p.plot_boxes(\n.venv/lib/python3.14/site-packages/seaborn/categorical.py:700: in plot_boxes\n    artists = ax.bxp(**boxplot_kws)\n              ^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.14/site-packages/matplotlib/_api/deprecation.py:453: in wrapper\n    return func(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^\n.venv/lib/python3.14/site-packages/matplotlib/axes/_axes.py:4448: in bxp\n    _api.warn_deprecated(\n.venv/lib/python3.14/site-packages/matplotlib/_api/deprecation.py:94: in warn_deprecated\n    warn_external(warning, category=MatplotlibDeprecationWarning)\n_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ \n\nmessage = PendingDeprecationWarning(\"vert: bool will be deprecated in a future version. Use orientation: {'vertical', 'horizontal'} instead.\")\ncategory = <class 'matplotlib._api.deprecation.MatplotlibDeprecationWarning'>\n\n    def warn_external(message, category=None):\n        \"\"\"\n        `warnings.warn` wrapper that sets *stacklevel* to \"outside Matplotlib\".\n    \n        The original emitter of the warning can be obtained by patching this\n        function back to `warnings.warn`, i.e. ``_api.warn_external =\n        warnings.warn`` (or ``functools.partial(warnings.warn, stacklevel=2)``,\n        etc.).\n        \"\"\"\n        kwargs = {}\n        if sys.version_info[:2] >= (3, 12):\n            # Go to Python's `site-packages` or `lib` from an editable install.\n            basedir = pathlib.Path(__file__).parents[2]\n            kwargs['skip_file_prefixes'] = (str(basedir / 'matplotlib'),\n                                            str(basedir / 'mpl_toolkits'))\n        else:\n            frame = sys._getframe()\n            for stacklevel in itertools.count(1):\n                if frame is None:\n                    # when called in embedded context may hit frame is None\n                    kwargs['stacklevel'] = stacklevel\n                    break\n                if not re.match(r\"\\A(matplotlib|mpl_toolkits)(\\Z|\\.(?!tests\\.))\",\n                                # Work around sphinx-gallery not setting __name__.\n                                frame.f_globals.get(\"__name__\", \"\")):\n                    kwargs['stacklevel'] = stacklevel\n                    break\n                frame = frame.f_back\n            # preemptively break reference cycle between locals and the frame\n            del frame\n>       warnings.warn(message, category, **kwargs)\nE       PendingDeprecationWarning: vert: bool will be deprecated in a future version. Use orientation: {'vertical', 'horizontal'} instead.\n\n.venv/lib/python3.14/site-packages/matplotlib/_api/__init__.py:405: PendingDeprecationWarning\n=========================== short test summary info ============================\nFAILED tests/test_plots.py::TestPlotFunctions::test_distribution - PendingDep...\nFAILED tests/test_regressions.py::TestSingleColumnDataFrameReports::test_html_with_single_column_dataframe\nFAILED tests/test_reports.py::TestHTMLReport::test_html_generates_file - Pend...\nFAILED tests/test_reports.py::TestHTMLReport::test_html_contains_title - Pend...\nFAILED tests/test_reports.py::TestHTMLReport::test_html_simple_returns_title\nFAILED tests/test_reports.py::TestHTMLReport::test_html_contains_benchmark_param\nFAILED tests/test_reports.py::TestHTMLReport::test_html_matched_dates_indicator\nFAILED tests/test_reports.py::TestHTMLReport::test_html_no_dark_mode - Pendin...\nFAILED tests/test_reports.py::TestHTMLReport::test_html_custom_rf - PendingDe...\nFAILED tests/test_reports.py::TestEdgeCases::test_html_with_dataframe - Pendi...\n10 failed, 215 passed in 24.26s\n"
+      }
+    ],
+    "unresolved_blockers": [],
+    "default_ancestry": {
+      "refs/remotes/origin/main": true
+    },
+    "merge_in_progress": false,
+    "artifact_files": [
+      "dist/quantstats-0.0.86.tar.gz",
+      "dist/quantstats-0.0.86-py3-none-any.whl",
+      "dist/.gitignore"
+    ],
+    "committed": true,
+    "pushed": false,
+    "worktree_status": ""
+  },
+  "note": "Full raw logs are retained in the workspace maintenance evidence, not distributed here. Hashes identify those original logs. A successful build or selected test subset does not imply a full test-suite pass. Commands containing <workspace> describe the original execution environment."
+}

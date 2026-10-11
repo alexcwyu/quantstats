@@ -37,27 +37,27 @@ Unsuccessful rows are retained as historical compatibility attempts; they are no
 
 | Command | Exit | Seconds | Evidence |
 |---|---:|---:|---|
-| `uv lock --upgrade --python 3.15` | 0 | 0.34 | [log](../../docs/maintenance-2026-10-12/quantstats-lock-3.15.log) |
-| `uv sync --all-extras --all-groups --python 3.15 --no-build --no-install-project` | 2 | 0.83 | [log](../../docs/maintenance-2026-10-12/quantstats-wheel-probe-3.15.log) |
-| `uv lock --upgrade --python 3.14` | 0 | 0.29 | [log](../../docs/maintenance-2026-10-12/quantstats-lock-3.14.log) |
-| `uv sync --all-extras --all-groups --python 3.14 --no-build --no-install-project` | 0 | 0.55 | [log](../../docs/maintenance-2026-10-12/quantstats-wheel-probe-3.14.log) |
-| `uv sync --all-extras --all-groups --python 3.14` | 0 | 0.51 | [log](../../docs/maintenance-2026-10-12/quantstats-sync-3.14.log) |
-| `uv build --python 3.14` | 0 | 0.92 | [log](../../docs/maintenance-2026-10-12/quantstats-build.log) |
-| `/Users/alex/.local/share/uv/python/cpython-3.14-macos-aarch64-none/bin/python3.14 -m compileall -q src` | 0 | 0.08 | [log](../../docs/maintenance-2026-10-12/quantstats-compile.log) |
-| `uv run --no-sync python -m pytest` | 1 | 25.68 | [log](../../docs/maintenance-2026-10-12/quantstats-tests.log) |
-| `uv run --no-sync python -m pytest` | 0 | 56.05 | [log](../../docs/maintenance-2026-10-12/quantstats-tests-matplotlib-orientation.log) |
-| `uv run --no-sync python -m compileall -q src` | 0 | 0.13 | [log](../../docs/maintenance-2026-10-12/quantstats-compile-final.log) |
-| `uv build --python 3.14` | 0 | 0.78 | [log](../../docs/maintenance-2026-10-12/quantstats-build-final.log) |
-| `uv run --no-sync python -c import sys,importlib.metadata,json; print(sys.version); print(json.dumps({d.metadata["Name"]: d.version for d in importlib.metadata.distributions()},indent=2,sort_keys=True))` | 0 | 0.13 | [log](../../docs/maintenance-2026-10-12/quantstats-versions-final.log) |
-| `uv sync --directory /tmp/trading-python315-probes/quantstats --all-extras --all-groups --python 3.15` | 0 | 67.54 | [log](../../docs/maintenance-2026-10-12/quantstats-python315-source-probe.log) |
-| `uv lock --upgrade --python 3.15` | 0 | 0.46 | [log](../../docs/maintenance-2026-10-12/quantstats-lock-python315-source-supported.log) |
-| `uv sync --all-extras --all-groups --python 3.15` | 0 | 1.87 | [log](../../docs/maintenance-2026-10-12/quantstats-sync-python315-source-supported.log) |
-| `uv run --no-sync python -m pytest` | 0 | 69.76 | [log](../../docs/maintenance-2026-10-12/quantstats-tests-python315-source-supported.log) |
-| `uv run --no-sync python -m compileall -q src` | 0 | 0.08 | [log](../../docs/maintenance-2026-10-12/quantstats-compile-selected-python.log) |
-| `uv build --python 3.15` | 0 | 1.23 | [log](../../docs/maintenance-2026-10-12/quantstats-build-selected-python.log) |
-| `uv run --no-sync python -c import sys,importlib.metadata,json; print(sys.version); print(json.dumps({d.metadata["Name"]:d.version for d in importlib.metadata.distributions()},indent=2,sort_keys=True))` | 0 | 0.14 | [log](../../docs/maintenance-2026-10-12/quantstats-versions-final.log) |
+| `uv lock --upgrade --python 3.15` | 0 | 0.34 | [check record](maintenance/index.html) |
+| `uv sync --all-extras --all-groups --python 3.15 --no-build --no-install-project` | 2 | 0.83 | [check record](maintenance/index.html) |
+| `uv lock --upgrade --python 3.14` | 0 | 0.29 | [check record](maintenance/index.html) |
+| `uv sync --all-extras --all-groups --python 3.14 --no-build --no-install-project` | 0 | 0.55 | [check record](maintenance/index.html) |
+| `uv sync --all-extras --all-groups --python 3.14` | 0 | 0.51 | [check record](maintenance/index.html) |
+| `uv build --python 3.14` | 0 | 0.92 | [check record](maintenance/index.html) |
+| `/Users/alex/.local/share/uv/python/cpython-3.14-macos-aarch64-none/bin/python3.14 -m compileall -q src` | 0 | 0.08 | [check record](maintenance/index.html) |
+| `uv run --no-sync python -m pytest` | 1 | 25.68 | [check record](maintenance/index.html) |
+| `uv run --no-sync python -m pytest` | 0 | 56.05 | [check record](maintenance/index.html) |
+| `uv run --no-sync python -m compileall -q src` | 0 | 0.13 | [check record](maintenance/index.html) |
+| `uv build --python 3.14` | 0 | 0.78 | [check record](maintenance/index.html) |
+| `uv run --no-sync python -c import sys,importlib.metadata,json; print(sys.version); print(json.dumps({d.metadata["Name"]: d.version for d in importlib.metadata.distributions()},indent=2,sort_keys=True))` | 0 | 0.13 | [check record](maintenance/index.html) |
+| `uv sync --directory /tmp/trading-python315-probes/quantstats --all-extras --all-groups --python 3.15` | 0 | 67.54 | [check record](maintenance/index.html) |
+| `uv lock --upgrade --python 3.15` | 0 | 0.46 | [check record](maintenance/index.html) |
+| `uv sync --all-extras --all-groups --python 3.15` | 0 | 1.87 | [check record](maintenance/index.html) |
+| `uv run --no-sync python -m pytest` | 0 | 69.76 | [check record](maintenance/index.html) |
+| `uv run --no-sync python -m compileall -q src` | 0 | 0.08 | [check record](maintenance/index.html) |
+| `uv build --python 3.15` | 0 | 1.23 | [check record](maintenance/index.html) |
+| `uv run --no-sync python -c import sys,importlib.metadata,json; print(sys.version); print(json.dumps({d.metadata["Name"]:d.version for d in importlib.metadata.distributions()},indent=2,sort_keys=True))` | 0 | 0.14 | [check record](maintenance/index.html) |
 
-The versions-final log records the exact interpreter patch release and every installed dependency version. The machine-readable [result](../../docs/maintenance-2026-10-12/quantstats-result.json) includes branch/default ancestry, status, artifacts and unresolved checks.
+The versions-final log records the exact interpreter patch release and every installed dependency version. The machine-readable [verification record](maintenance/verification.json) includes branch/default ancestry, status, artifacts and unresolved checks.
 
 ## Dependency floor refresh
 
