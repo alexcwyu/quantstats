@@ -1,0 +1,703 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Current uv development workflow</title><style>
+:root{color-scheme:light dark;--bg:#f6f8fa;--paper:#fff;--fg:#182332;--muted:#526274;--line:#d9e0e7;--accent:#1769aa}
+@media(prefers-color-scheme:dark){:root{--bg:#111820;--paper:#192330;--fg:#e6edf3;--muted:#a0b3c5;--line:#344354;--accent:#71b7ee}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.7 system-ui,-apple-system,sans-serif}
+header{border-bottom:1px solid var(--line);padding:16px max(24px,calc((100vw - 1120px)/2));background:var(--paper);font-size:14px}
+main{max-width:1120px;margin:32px auto;padding:40px 48px;background:var(--paper);border:1px solid var(--line);border-radius:12px}
+h1,h2,h3,h4{line-height:1.3;scroll-margin-top:24px}h1{font-size:2.1rem}h2{margin-top:2.5em;border-bottom:1px solid var(--line);padding-bottom:.35em}h3{margin-top:1.8em}
+a{color:var(--accent);text-underline-offset:3px}code{font:14px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;background:var(--bg);border-radius:4px;padding:2px 5px}pre{overflow:auto;border:1px solid var(--line);background:var(--bg);padding:16px;border-radius:7px}pre code{padding:0;background:none}
+table{border-collapse:collapse;width:100%;display:block;overflow-x:auto;font-size:14px}th,td{border:1px solid var(--line);padding:9px 12px;text-align:left}th{background:var(--bg)}blockquote{border-left:4px solid var(--accent);margin:16px 0;padding:4px 20px;color:var(--muted)}
+.diagram{overflow-x:auto;margin:24px 0;padding:20px;border:1px solid var(--line);border-radius:8px;background:#fff;color:#182332}.mermaid{border:0;background:none;text-align:center}.mermaid svg{height:auto;max-width:100%}details{font-size:13px;color:#526274}.headerlink{margin-left:.4em;font-size:.7em;text-decoration:none;color:var(--muted)}
+@media(max-width:740px){main{margin:0;padding:24px 18px;border:0;border-radius:0}h1{font-size:1.7rem}.diagram{padding:8px}}
+@media print{header,details,.headerlink{display:none}body,main{background:#fff;color:#000;border:0;margin:0;padding:0}a{color:#000}.diagram,pre{break-inside:avoid}}
+</style></head><body><header>Engineering documentation · <a href="development.md">Markdown source</a></header><main><!-- ayu-maintenance-2026-10-12 -->
+<h1 id="current-uv-development-workflow">Current uv development workflow<a class="headerlink" href="#current-uv-development-workflow" title="Permanent link">&para;</a></h1>
+<p>The maintained branch is <code>feature/ayu_develop</code>. The selected interpreter is Python <code>3.15</code>; <code>requires-python</code> records the range that was actually resolved. Python 3.15 was attempted first. Dependency/native-wheel failures and fallback evidence are recorded in <a href="validation.md">validation.md</a>.</p>
+<pre><code class="language-sh">export UV_PYTHON_PREFERENCE=only-managed
+uv python install 3.15
+uv lock --check
+uv sync --frozen --all-extras --all-groups
+uv run --no-sync python -m compileall -q src
+uv build
+uv run --no-sync python -m pytest
+</code></pre>
+<p>Use <code>uv lock --upgrade</code> when intentionally refreshing dependencies, then review <code>pyproject.toml</code>, <code>uv.lock</code>, and the existing full test suite. The dependency floors were refreshed from current PyPI release metadata while preserving meaningful upstream upper bounds. Compatibility exceptions are documented with their resolver/test evidence rather than hidden by disabling tests.</p>
+<p>The <code>src/</code> layout and build-backend package discovery preserve public import names. Wheel/sdist resources include the source-associated data and templates. Optional vendor SDKs, live credentials, databases and graphical/native libraries retain their original runtime requirements. Examples and test fixtures are not promoted into the library API.</p>
+<!-- prior-development-notes -->
+
+<h2 id="compatibility-decisions">Compatibility decisions<a class="headerlink" href="#compatibility-decisions" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The complete supplied suite passes225 cases. The distribution plot uses Matplotlib orientation and explicit box colors rather than Seaborn's deprecated vert argument.</li>
+<li>Matplotlib&gt;=3.10.9,&lt;3.11 avoids Seaborn0.13.2 use of deprecated colormap.set_bad; NumPy&gt;=2.4.6,&lt;2.5 avoids the current Matplotlib date converter's deprecated generic Timedelta unit. These caps are based on actual full-suite failures.</li>
+</ul>
+<h1 id="quantstats-development-guide">QuantStats Development Guide<a class="headerlink" href="#quantstats-development-guide" title="Permanent link">&para;</a></h1>
+<h2 id="project-setup">Project Setup<a class="headerlink" href="#project-setup" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash">cd quantstats
+pip install -e .
+# or
+pip install -e &quot;.[dev]&quot;
+</code></pre>
+<h2 id="dependencies">Dependencies<a class="headerlink" href="#dependencies" title="Permanent link">&para;</a></h2>
+<p><strong>Core</strong>: numpy, pandas, scipy, matplotlib, seaborn, tabulate
+<strong>Data</strong>: yfinance (benchmark downloads)
+<strong>Optional</strong>: plotly (interactive charts), IPython (notebook display)</p>
+<h2 id="project-structure">Project Structure<a class="headerlink" href="#project-structure" title="Permanent link">&para;</a></h2>
+<pre><code>quantstats/
+    src/quantstats/
+        __init__.py          # Package init, extend_pandas()
+        stats.py             # 60+ statistical functions
+        reports.py           # HTML and console report generation
+        plots.py             # Plotting entry point
+        utils.py             # Data preparation and validation
+        _plotting/
+            __init__.py
+            core.py          # Low-level chart rendering
+            wrappers.py      # High-level chart API
+        _montecarlo.py       # Monte Carlo simulation
+        _compat.py           # pandas/yfinance compatibility
+        _numpy_compat.py     # NumPy compatibility
+        version.py           # Version string
+</code></pre>
+<h2 id="testing">Testing<a class="headerlink" href="#testing" title="Permanent link">&para;</a></h2>
+<pre><code class="language-bash"># Run all tests
+pytest
+
+# Run specific tests
+pytest tests/test_stats.py
+pytest tests/test_reports.py
+
+# With coverage
+pytest --cov=quantstats
+</code></pre>
+<h2 id="code-conventions">Code Conventions<a class="headerlink" href="#code-conventions" title="Permanent link">&para;</a></h2>
+<h3 id="function-signatures">Function Signatures<a class="headerlink" href="#function-signatures" title="Permanent link">&para;</a></h3>
+<p>All stat functions follow this pattern:</p>
+<pre><code class="language-python">def metric_name(
+    returns: _pd.Series | _pd.DataFrame,
+    rf: float = 0.0,
+    periods: int = 252,
+    annualize: bool = True,
+    prepare_returns: bool = True,
+) -&gt; float | _pd.Series:
+    &quot;&quot;&quot;
+    Brief description.
+
+    Args:
+        returns: Return series or DataFrame
+        rf: Risk-free rate (default: 0.0)
+        periods: Periods per year for annualization (default: 252)
+        annualize: Whether to annualize the result (default: True)
+        prepare_returns: Whether to prepare returns first (default: True)
+
+    Returns:
+        Computed metric value
+    &quot;&quot;&quot;
+</code></pre>
+<h3 id="type-aliases">Type Aliases<a class="headerlink" href="#type-aliases" title="Permanent link">&para;</a></h3>
+<pre><code class="language-python">Returns = _pd.Series | _pd.DataFrame
+</code></pre>
+<h3 id="import-conventions">Import Conventions<a class="headerlink" href="#import-conventions" title="Permanent link">&para;</a></h3>
+<p>Internal imports use underscore-prefixed aliases:</p>
+<pre><code class="language-python">import pandas as _pd
+import numpy as _np
+from scipy.stats import norm as _norm
+</code></pre>
+<p>This prevents namespace pollution when the module is imported with <code>*</code>.</p>
+<h3 id="lazy-imports">Lazy Imports<a class="headerlink" href="#lazy-imports" title="Permanent link">&para;</a></h3>
+<p>To avoid circular dependencies between stats, reports, and plots:</p>
+<pre><code class="language-python">_stats = None
+def _get_stats():
+    global _stats
+    if _stats is None:
+        from . import stats
+        _stats = stats
+    return _stats
+</code></pre>
+<h2 id="adding-a-new-metric">Adding a New Metric<a class="headerlink" href="#adding-a-new-metric" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Add the function to <code>stats.py</code>:</li>
+</ol>
+<pre><code class="language-python">def my_metric(
+    returns: Returns,
+    rf: float = 0.0,
+    periods: int = 252,
+    prepare_returns: bool = True,
+) -&gt; float:
+    &quot;&quot;&quot;
+    Description of my metric.
+
+    Args:
+        returns: Return series
+        rf: Risk-free rate
+        periods: Periods per year
+        prepare_returns: Whether to prepare returns
+
+    Returns:
+        float: Computed metric
+    &quot;&quot;&quot;
+    if prepare_returns:
+        returns = _utils._prepare_returns(returns, rf=rf, nperiods=periods)
+
+    # Compute and return metric
+    return computed_value
+</code></pre>
+<ol start="2">
+<li>Add to <code>extend_pandas()</code> in <code>__init__.py</code>:</li>
+</ol>
+<pre><code class="language-python">_po.my_metric = stats.my_metric
+</code></pre>
+<ol start="3">
+<li>
+<p>Add to the metrics table in <code>reports.py</code> if it should appear in reports</p>
+</li>
+<li>
+<p>Add tests</p>
+</li>
+</ol>
+<h2 id="adding-a-new-plot">Adding a New Plot<a class="headerlink" href="#adding-a-new-plot" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Add the wrapper function in <code>src/quantstats/_plotting/wrappers.py</code>:</li>
+</ol>
+<pre><code class="language-python">def my_chart(
+    returns: Returns,
+    benchmark: Returns | None = None,
+    title: str = &quot;My Chart&quot;,
+    savefig: dict | None = None,
+    show: bool = True,
+    **kwargs,
+) -&gt; _Figure | None:
+    &quot;&quot;&quot;Chart description.&quot;&quot;&quot;
+    stats = _get_stats()
+    utils = _get_utils()
+
+    # Prepare data
+    returns = utils._prepare_returns(returns)
+
+    # Create figure
+    fig, ax = _plt.subplots(figsize=(10, 6))
+
+    # Plot
+    ax.plot(returns.index, returns.values)
+    ax.set_title(title)
+
+    # Apply standard formatting
+    _core.format_plot(fig, ax)
+
+    if savefig:
+        fig.savefig(**savefig)
+    if show:
+        _plt.show()
+
+    return fig
+</code></pre>
+<ol start="2">
+<li>
+<p>Export from <code>src/quantstats/_plotting/__init__.py</code> (it re-exports from wrappers)</p>
+</li>
+<li>
+<p>Add to <code>extend_pandas()</code>:</p>
+</li>
+</ol>
+<pre><code class="language-python">_po.plot_my_chart = plots.my_chart
+</code></pre>
+<h2 id="adding-to-html-reports">Adding to HTML Reports<a class="headerlink" href="#adding-to-html-reports" title="Permanent link">&para;</a></h2>
+<p>In <code>reports.py</code>, the <code>html()</code> function generates the report. To add a new section:</p>
+<ol>
+<li>Compute the metric in the metrics gathering section</li>
+<li>Add the chart generation call</li>
+<li>Add the HTML template section</li>
+</ol>
+<h2 id="performance-considerations">Performance Considerations<a class="headerlink" href="#performance-considerations" title="Permanent link">&para;</a></h2>
+<ul>
+<li>The <code>_prepare_returns()</code> cache helps when the same data is analyzed with multiple metrics</li>
+<li>Monte Carlo simulations use pre-allocated numpy arrays for efficiency</li>
+<li>Chart generation is the slowest part -- consider using <code>show=False</code> when generating many charts</li>
+<li>For large DataFrames, individual metric calls are faster than full <code>reports.html()</code></li>
+</ul>
+<h2 id="compatibility-layer">Compatibility Layer<a class="headerlink" href="#compatibility-layer" title="Permanent link">&para;</a></h2>
+<p><code>_compat.py</code> handles breaking changes in dependencies:</p>
+<ul>
+<li><code>safe_concat()</code> -- Handles pandas concat API changes</li>
+<li><code>safe_resample()</code> -- Handles resampling frequency string changes (e.g., 'M' to 'ME')</li>
+<li><code>safe_yfinance_download()</code> -- Handles yfinance API changes</li>
+</ul>
+<p>When pandas or yfinance release breaking changes, update <code>_compat.py</code> rather than scattering version checks throughout the codebase.</p>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
+<p>Use the custom exception hierarchy:</p>
+<pre><code class="language-python">from quantstats.utils import DataValidationError, CalculationError
+
+# In validation
+if data is None:
+    raise DataValidationError(&quot;Input data cannot be None&quot;)
+
+# In computation
+try:
+    result = complex_calculation()
+except ZeroDivisionError:
+    raise CalculationError(&quot;Division by zero in metric calculation&quot;)
+</code></pre>
+<h2 id="release-checklist">Release Checklist<a class="headerlink" href="#release-checklist" title="Permanent link">&para;</a></h2>
+<ol>
+<li>Update <code>version.py</code></li>
+<li>Run full test suite</li>
+<li>Verify HTML report generation</li>
+<li>Test pandas extension</li>
+<li>Test with latest pandas/numpy/matplotlib versions</li>
+<li>Update <code>_compat.py</code> if needed for new dependency versions</li>
+</ol>
+<h2 id="configuration-reference">Configuration Reference<a class="headerlink" href="#configuration-reference" title="Permanent link">&para;</a></h2>
+<p>QuantStats functions are configured via function parameters rather than global configuration files. Below are the key parameters for the most commonly used functions.</p>
+<h3 id="common-parameters-shared-across-most-stats-functions">Common Parameters (shared across most <code>stats.*</code> functions)<a class="headerlink" href="#common-parameters-shared-across-most-stats-functions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>returns</code></td>
+<td>Series or DataFrame</td>
+<td><em>(required)</em></td>
+<td>Return series (daily returns as decimals, e.g., 0.01 = 1%)</td>
+</tr>
+<tr>
+<td><code>rf</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>Risk-free rate (annualized, same scale as returns)</td>
+</tr>
+<tr>
+<td><code>periods</code></td>
+<td>int</td>
+<td><code>252</code></td>
+<td>Number of trading periods per year (252 for daily, 12 for monthly)</td>
+</tr>
+<tr>
+<td><code>annualize</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Whether to annualize the computed metric</td>
+</tr>
+<tr>
+<td><code>prepare_returns</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Whether to auto-detect and convert prices to returns</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reportshtml"><code>reports.html()</code><a class="headerlink" href="#reportshtml" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>returns</code></td>
+<td>Series</td>
+<td><em>(required)</em></td>
+<td>Strategy return series</td>
+</tr>
+<tr>
+<td><code>benchmark</code></td>
+<td>Series or str</td>
+<td><code>None</code></td>
+<td>Benchmark returns or ticker symbol (e.g., <code>"SPY"</code>) to download</td>
+</tr>
+<tr>
+<td><code>rf</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>Risk-free rate</td>
+</tr>
+<tr>
+<td><code>output</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>Output HTML file path (returns HTML string if <code>None</code>)</td>
+</tr>
+<tr>
+<td><code>title</code></td>
+<td>str</td>
+<td><code>"Strategy Tearsheet"</code></td>
+<td>Report title</td>
+</tr>
+<tr>
+<td><code>compounded</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Whether returns should be compounded</td>
+</tr>
+<tr>
+<td><code>periods_per_year</code></td>
+<td>int</td>
+<td><code>252</code></td>
+<td>Periods per year for annualization</td>
+</tr>
+<tr>
+<td><code>match_dates</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Align benchmark dates to strategy dates</td>
+</tr>
+<tr>
+<td><code>download_filename</code></td>
+<td>str</td>
+<td><code>None</code></td>
+<td>Filename for the download button in the HTML report</td>
+</tr>
+</tbody>
+</table>
+<h3 id="reportsmetrics"><code>reports.metrics()</code><a class="headerlink" href="#reportsmetrics" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>returns</code></td>
+<td>Series</td>
+<td><em>(required)</em></td>
+<td>Strategy return series</td>
+</tr>
+<tr>
+<td><code>benchmark</code></td>
+<td>Series or str</td>
+<td><code>None</code></td>
+<td>Benchmark for comparison</td>
+</tr>
+<tr>
+<td><code>rf</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>Risk-free rate</td>
+</tr>
+<tr>
+<td><code>display</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Print to console (<code>True</code>) or return DataFrame (<code>False</code>)</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td>str</td>
+<td><code>"basic"</code></td>
+<td>Detail level: <code>"basic"</code>, <code>"full"</code></td>
+</tr>
+<tr>
+<td><code>sep</code></td>
+<td>bool</td>
+<td><code>False</code></td>
+<td>Add separator lines between metric groups</td>
+</tr>
+<tr>
+<td><code>compounded</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Whether returns are compounded</td>
+</tr>
+<tr>
+<td><code>periods_per_year</code></td>
+<td>int</td>
+<td><code>252</code></td>
+<td>Periods per year</td>
+</tr>
+<tr>
+<td><code>prepare_returns</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Auto-convert prices to returns</td>
+</tr>
+<tr>
+<td><code>match_dates</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Align benchmark dates</td>
+</tr>
+</tbody>
+</table>
+<h3 id="statssharpe"><code>stats.sharpe()</code><a class="headerlink" href="#statssharpe" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>returns</code></td>
+<td>Series or DataFrame</td>
+<td><em>(required)</em></td>
+<td>Return series</td>
+</tr>
+<tr>
+<td><code>rf</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>Risk-free rate</td>
+</tr>
+<tr>
+<td><code>periods</code></td>
+<td>int</td>
+<td><code>252</code></td>
+<td>Periods per year</td>
+</tr>
+<tr>
+<td><code>annualize</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Annualize the ratio</td>
+</tr>
+<tr>
+<td><code>smart</code></td>
+<td>bool</td>
+<td><code>False</code></td>
+<td>Apply autocorrelation penalty (Smart Sharpe)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="statssortino"><code>stats.sortino()</code><a class="headerlink" href="#statssortino" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>returns</code></td>
+<td>Series or DataFrame</td>
+<td><em>(required)</em></td>
+<td>Return series</td>
+</tr>
+<tr>
+<td><code>rf</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>Risk-free rate</td>
+</tr>
+<tr>
+<td><code>periods</code></td>
+<td>int</td>
+<td><code>252</code></td>
+<td>Periods per year</td>
+</tr>
+<tr>
+<td><code>annualize</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Annualize the ratio</td>
+</tr>
+<tr>
+<td><code>smart</code></td>
+<td>bool</td>
+<td><code>False</code></td>
+<td>Apply autocorrelation penalty (Smart Sortino)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="statsmax_drawdown"><code>stats.max_drawdown()</code><a class="headerlink" href="#statsmax_drawdown" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>returns</code></td>
+<td>Series</td>
+<td><em>(required)</em></td>
+<td>Return series</td>
+</tr>
+</tbody>
+</table>
+<h3 id="statsvalue_at_risk"><code>stats.value_at_risk()</code><a class="headerlink" href="#statsvalue_at_risk" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>returns</code></td>
+<td>Series</td>
+<td><em>(required)</em></td>
+<td>Return series</td>
+</tr>
+<tr>
+<td><code>sigma</code></td>
+<td>float</td>
+<td><code>1.0</code></td>
+<td>Number of standard deviations (1.0 = ~84%, 1.65 = 95%, 2.33 = 99%)</td>
+</tr>
+<tr>
+<td><code>confidence</code></td>
+<td>float</td>
+<td><code>0.95</code></td>
+<td>Confidence level (alternative to sigma)</td>
+</tr>
+<tr>
+<td><code>prepare_returns</code></td>
+<td>bool</td>
+<td><code>True</code></td>
+<td>Auto-convert prices to returns</td>
+</tr>
+</tbody>
+</table>
+<h3 id="statsmontecarlo"><code>stats.montecarlo()</code><a class="headerlink" href="#statsmontecarlo" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>returns</code></td>
+<td>Series</td>
+<td><em>(required)</em></td>
+<td>Return series</td>
+</tr>
+<tr>
+<td><code>sims</code></td>
+<td>int</td>
+<td><code>100</code></td>
+<td>Number of simulation paths</td>
+</tr>
+<tr>
+<td><code>bust</code></td>
+<td>float</td>
+<td><code>-0.1</code></td>
+<td>Loss threshold for bust probability (e.g., -0.1 = -10%)</td>
+</tr>
+<tr>
+<td><code>goal</code></td>
+<td>float</td>
+<td><code>0.0</code></td>
+<td>Gain threshold for goal probability</td>
+</tr>
+</tbody>
+</table>
+<h3 id="extend_pandas-configuration"><code>extend_pandas()</code> Configuration<a class="headerlink" href="#extend_pandas-configuration" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Behavior</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adds all <code>stats.*</code> functions as methods on <code>pd.Series</code> and <code>pd.DataFrame</code></td>
+<td>e.g., <code>returns.sharpe()</code>, <code>returns.max_drawdown()</code></td>
+</tr>
+<tr>
+<td>Adds all <code>plots.*</code> functions as methods</td>
+<td>e.g., <code>returns.plot_snapshot()</code>, <code>returns.plot_monthly_heatmap()</code></td>
+</tr>
+<tr>
+<td>Does not modify existing pandas methods</td>
+<td>Only adds new methods, no overrides</td>
+</tr>
+</tbody>
+</table>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
+<h3 id="1-typeerror-unsupported-operand-types-for-str-and-str">1. <code>TypeError: unsupported operand type(s) for -: 'str' and 'str'</code><a class="headerlink" href="#1-typeerror-unsupported-operand-types-for-str-and-str" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: Passing a ticker string (e.g., <code>"SPY"</code>) as <code>returns</code> instead of actual return data.
+<strong>Solution</strong>: QuantStats expects numeric return series, not ticker symbols. Only the <code>benchmark</code> parameter in <code>reports.html()</code> accepts ticker strings for auto-download.</p>
+<h3 id="2-yfinance-download-fails-or-returns-empty-data">2. <code>yfinance</code> download fails or returns empty data<a class="headerlink" href="#2-yfinance-download-fails-or-returns-empty-data" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: Yahoo Finance API changes or rate limiting.
+<strong>Solution</strong>: Update yfinance (<code>pip install yfinance --upgrade</code>). If downloads fail, pre-download benchmark data and pass it as a Series instead of a ticker string.</p>
+<h3 id="3-html-report-is-blank-or-missing-charts">3. HTML report is blank or missing charts<a class="headerlink" href="#3-html-report-is-blank-or-missing-charts" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: Matplotlib backend issue, often in headless environments.
+<strong>Solution</strong>: Set the matplotlib backend before importing QuantStats: <code>import matplotlib; matplotlib.use('Agg')</code>. Ensure <code>matplotlib</code> and <code>seaborn</code> are installed.</p>
+<h3 id="4-valueerror-cannot-reindex-from-a-duplicate-axis">4. <code>ValueError: cannot reindex from a duplicate axis</code><a class="headerlink" href="#4-valueerror-cannot-reindex-from-a-duplicate-axis" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: The returns series has duplicate index values (duplicate dates).
+<strong>Solution</strong>: Remove duplicates: <code>returns = returns[~returns.index.duplicated(keep='first')]</code>. Ensure date parsing produced a proper DatetimeIndex.</p>
+<h3 id="5-metrics-show-inf-or-nan-values">5. Metrics show <code>inf</code> or <code>nan</code> values<a class="headerlink" href="#5-metrics-show-inf-or-nan-values" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: The returns series is too short, all zeros, or has no variance.
+<strong>Solution</strong>: Ensure at least 20-30 data points. Check for all-zero returns or constant values. Verify <code>prepare_returns=True</code> if passing price data.</p>
+<h3 id="6-futurewarning-m-is-deprecated-use-me-instead">6. <code>FutureWarning: 'M' is deprecated, use 'ME' instead</code><a class="headerlink" href="#6-futurewarning-m-is-deprecated-use-me-instead" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: pandas frequency string deprecation in pandas 2.2+.
+<strong>Solution</strong>: Update QuantStats to the latest version. The <code>_compat.py</code> module handles these changes via <code>safe_resample()</code>.</p>
+<h3 id="7-attributeerror-series-object-has-no-attribute-sharpe">7. <code>AttributeError: 'Series' object has no attribute 'sharpe'</code><a class="headerlink" href="#7-attributeerror-series-object-has-no-attribute-sharpe" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: <code>qs.extend_pandas()</code> was not called before using pandas extension methods.
+<strong>Solution</strong>: Call <code>qs.extend_pandas()</code> once at the start of your script or notebook.</p>
+<h3 id="8-monthly-returns-heatmap-shows-wrong-months">8. Monthly returns heatmap shows wrong months<a class="headerlink" href="#8-monthly-returns-heatmap-shows-wrong-months" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: The returns index is not a proper <code>DatetimeIndex</code> or uses non-standard frequency.
+<strong>Solution</strong>: Convert the index: <code>returns.index = pd.to_datetime(returns.index)</code>. Ensure no timezone mismatches.</p>
+<h3 id="9-calculationerror-division-by-zero-in-metric-calculation">9. <code>CalculationError: Division by zero in metric calculation</code><a class="headerlink" href="#9-calculationerror-division-by-zero-in-metric-calculation" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: A metric requires a denominator that is zero (e.g., zero standard deviation for Sharpe).
+<strong>Solution</strong>: This is expected for constant-return strategies. Handle by checking for edge cases before calling the metric, or catch the exception.</p>
+<h3 id="10-monte-carlo-simulation-is-slow">10. Monte Carlo simulation is slow<a class="headerlink" href="#10-monte-carlo-simulation-is-slow" title="Permanent link">&para;</a></h3>
+<p><strong>Cause</strong>: High <code>sims</code> count with a long returns series.
+<strong>Solution</strong>: Reduce <code>sims</code> (100-500 is typically sufficient). Monte Carlo uses pre-allocated NumPy arrays but still scales linearly with <code>sims * len(returns)</code>.</p>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="api-key-management">API Key Management<a class="headerlink" href="#api-key-management" title="Permanent link">&para;</a></h3>
+<ul>
+<li>QuantStats uses <code>yfinance</code> for benchmark data downloads. <code>yfinance</code> does not require API keys by default (it scrapes Yahoo Finance).</li>
+<li>If configuring <code>yfinance</code> with a premium API key, store it in an environment variable, not in your analysis scripts.</li>
+</ul>
+<h3 id="credential-storage">Credential Storage<a class="headerlink" href="#credential-storage" title="Permanent link">&para;</a></h3>
+<ul>
+<li>QuantStats does not store or manage credentials. It is a pure analytics library.</li>
+<li>When generating HTML reports with <code>output="report.html"</code>, the report file is written locally. Ensure output directories are not publicly accessible, as reports contain strategy performance details.</li>
+</ul>
+<h3 id="network-security">Network Security<a class="headerlink" href="#network-security" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The only network call QuantStats makes is via <code>yfinance</code> when a benchmark ticker string (e.g., <code>"SPY"</code>) is passed. This can be avoided by passing pre-downloaded benchmark data as a Series.</li>
+<li>To use QuantStats in air-gapped environments, pre-download benchmark data and pass it directly. All metric computations are purely local.</li>
+</ul>
+<h3 id="safe-practices">Safe Practices<a class="headerlink" href="#safe-practices" title="Permanent link">&para;</a></h3>
+<ul>
+<li>When using <code>extend_pandas()</code>, be aware that it modifies the global <code>pandas</code> namespace for the entire Python process. Avoid in library code; use only in scripts and notebooks.</li>
+<li>HTML reports embed all data inline (no external CDN calls). They are safe to share but may contain sensitive strategy performance data.</li>
+<li>When publishing or sharing reports, review them for proprietary information before distribution.</li>
+<li>If using <code>prepare_returns=True</code>, QuantStats auto-detects whether input is prices or returns. For production pipelines, explicitly pass returns and set <code>prepare_returns=False</code> to avoid misdetection.</li>
+<li>Pin dependency versions (<code>pandas</code>, <code>matplotlib</code>, <code>yfinance</code>) to avoid breaking changes in the compatibility layer.</li>
+</ul>
+<hr />
+<h2 id="see-also">See Also<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="README.md">README</a> — Project overview and quick start</li>
+<li><a href="architecture.md">Architecture</a> — System design and components</li>
+<li><a href="workflow.md">Workflow</a> — Event flows and processing pipelines</li>
+<li><a href="state-management.md">State Management</a> — State lifecycle and data models</li>
+</ul></main>
+<script type="module">
+import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@12.1.0/dist/mermaid.esm.min.mjs';
+mermaid.initialize({startOnLoad:true,securityLevel:'strict',theme:'default',flowchart:{useMaxWidth:true},sequence:{useMaxWidth:true}});
+</script></body></html>

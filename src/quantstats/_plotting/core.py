@@ -1544,18 +1544,15 @@ def plot_distribution(
     fig.set_facecolor("white")
     ax.set_facecolor("white")
 
-    # Create box plot with custom color palette
-    _sns.boxplot(
-        data=port,
-        ax=ax,
-        palette={
-            "Daily": colors[0],
-            "Weekly": colors[1],
-            "Monthly": colors[2],
-            "Quarterly": colors[3],
-            "Yearly": colors[4],
-        },
+    # Use Matplotlib's orientation API; seaborn still passes deprecated vert.
+    boxes = ax.boxplot(
+        [port[column].dropna().to_numpy() for column in port.columns],
+        orientation="vertical",
+        tick_labels=list(port.columns),
+        patch_artist=True,
     )
+    for box, color in zip(boxes["boxes"], colors):
+        box.set_facecolor(color)
 
     # Format y-axis as percentage
     ax.yaxis.set_major_formatter(
