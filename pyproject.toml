@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "quantstats"
-version = "0.0.77"
+version = "0.0.86"
 description = "Portfolio analytics for quants"
 readme = "README.md"
 requires-python = "==3.13.*"
